@@ -1,12 +1,129 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WISC-V Profile</title>
-<style>*{box-sizing:border-box}body{margin:0;background:#f6f4ef;color:#252525;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Yu Gothic",sans-serif}.c{width:min(92%,720px);margin:auto;padding:36px 0 70px}.top{font-size:11px;letter-spacing:2px;color:#777;margin-bottom:36px}h1{font-size:48px;line-height:1;margin:0 0 14px}.sub,.desc{color:#777;line-height:1.7}.sub{margin-bottom:35px}.card{background:#fff;border:1px solid #e4e0d9;border-radius:18px;padding:22px;margin-bottom:18px}.ttl{font-size:12px;font-weight:700;letter-spacing:1.5px;color:#777;margin-bottom:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.box{background:#faf9f6;border:1px solid #e5e1da;border-radius:13px;padding:14px}label{display:block;font-size:12px;color:#777;margin-bottom:7px}input,select{width:100%;padding:13px;border:1px solid #ddd8d1;border-radius:9px;background:#fff;font-size:16px}.age{margin-bottom:16px}button{width:100%;margin-top:16px;padding:16px;border:0;border-radius:11px;background:#222;color:#fff;font-size:16px;font-weight:700}#result{display:none}.hero{text-align:center;padding:10px}.num{font-size:68px;font-weight:700}.row{margin:22px 0}.head{display:flex;justify-content:space-between;font-weight:700}.score{font-size:22px}.track{height:8px;background:#ece9e3;border-radius:10px;overflow:hidden;margin-top:8px}.fill{height:100%;background:#222}.desc{font-size:12px;margin-top:7px}.analysis{border-top:1px solid #eee8df;padding-top:20px;margin-top:25px}.analysis p{line-height:1.9;color:#555}.tag{display:inline-block;background:#efede8;border-radius:30px;padding:7px 11px;margin:3px;font-size:12px}.note{font-size:11px;color:#999;line-height:1.7}@media(max-width:520px){.grid{grid-template-columns:1fr}h1{font-size:40px}}</style></head>
-<body><main class="c"><div class="top">WISC-V PROFILE / v0.1</div><h1>WISC-V<br>Profile</h1><div class="sub">WISC-Vの指数を入力すると、プロフィールを見やすく整理して表示します。</div>
-<section class="card"><div class="ttl">BASIC INFORMATION</div><div class="age"><label>年齢</label><select><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option selected>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option></select></div><div class="grid">
-<div class="box"><label>言語理解（VCI）</label><input id="vci" type="number" placeholder="例：120"></div><div class="box"><label>視空間（VSI）</label><input id="vsi" type="number" placeholder="例：138"></div><div class="box"><label>流動性推理（FRI）</label><input id="fri" type="number" placeholder="例：142"></div><div class="box"><label>ワーキングメモリ（WMI）</label><input id="wmi" type="number" placeholder="例：95"></div><div class="box"><label>処理速度（PSI）</label><input id="psi" type="number" placeholder="例：88"></div><div class="box"><label>全検査IQ（FSIQ）</label><input id="fsiq" type="number" placeholder="任意"></div></div><button onclick="go()">プロフィールを見る</button></section>
-<section class="card" id="result"><div class="ttl">PROFILE</div><div class="hero"><div class="desc">最大指数差</div><div class="num" id="range"></div></div><div id="bars"></div><div class="analysis"><h2>このプロフィールの特徴</h2><p id="text"></p><div id="tags"></div></div></section>
-<div class="note">※このページはWISC-Vの結果を整理して理解するための補助ツールです。診断や医学的・心理学的判断を行うものではありません。正式な解釈は検査を実施した専門家にご確認ください。</div></main>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WISC-V Profile</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f5f0;color:#252722;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;line-height:1.8}
+.c{max-width:720px;margin:auto;padding:38px 18px 70px}
+.top{padding:8px 6px 28px}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.14em}
+h1{font-size:32px;line-height:1.35;margin:10px 0 14px}
+.lead{font-size:16px;color:#4d504a}
+.card{background:#fff;border:1px solid #dddcd5;border-radius:22px;padding:24px;margin:14px 0;box-shadow:0 4px 18px rgba(0,0,0,.035)}
+.ttl{font-size:22px;font-weight:800;margin-bottom:16px}
+.box{display:grid;gap:14px}
+label{font-weight:700;display:block}
+input,select{width:100%;font:inherit;font-weight:700;padding:15px;border:1px solid #d5d5cf;border-radius:14px;background:#fff;margin-top:5px}
+button{width:100%;border:0;border-radius:15px;padding:17px;background:#262823;color:#fff;font-size:16px;font-weight:800;margin-top:20px}
+.note{font-size:12px;color:#777970;margin-top:14px}
+#result{display:none}
+.badge{display:inline-block;background:#f1f0e9;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700;margin-bottom:10px}
+.bar{height:7px;background:#ecece7;border-radius:9px;overflow:hidden;margin:5px 0 15px}
+.fill{height:100%;background:#64675f;border-radius:9px}
+h2{font-size:21px;margin:0 0 8px}
+h3{font-size:17px;margin:18px 0 5px}
+p{margin:5px 0 12px}
+ul{padding-left:22px}
+.soft{background:#f0f0eb}
+</style>
+</head>
+<body>
+<main class="c">
+<div class="top">
+<div class="kicker">PROTOTYPE v0.2</div>
+<h1>数値を、わが子を理解するための言葉へ。</h1>
+<div class="lead">5つの指標を入力すると、その子の「得意なこと」と「負担になりやすいこと」を、保護者の方にわかりやすい言葉で整理します。</div>
+</div>
+
+<section class="card">
+<div class="ttl">検査結果を入力</div>
+<div class="box">
+<label>検査を受けたときの年齢<select id="age"><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option selected>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option></select></label>
+<label>言語理解（VCI）<input id="vci" type="number" value="120"></label>
+<label>視空間（VSI）<input id="vsi" type="number" value="138"></label>
+<label>流動性推理（FRI）<input id="fri" type="number" value="142"></label>
+<label>ワーキングメモリ（WMI）<input id="wmi" type="number" value="103"></label>
+<label>処理速度（PSI）<input id="psi" type="number" value="90"></label>
+</div>
+<button onclick="go()">この子のプロフィールを見る</button>
+<div class="note">※正式なWISC-V所見・診断ではありません。数値だけでお子さんを決めつけず、理解や支援のヒントとしてご覧ください。</div>
+</section>
+
+<div id="result">
+<section class="card">
+<div class="badge" id="stage"></div>
+<h2 id="headline"></h2>
+<p id="intro"></p>
+</section>
+
+<section class="card">
+<h2>5つの力</h2>
+<div id="bars"></div>
+</section>
+
+<section class="card">
+<h2>✨ この子の大きな強み</h2>
+<div id="strengths"></div>
+</section>
+
+<section class="card">
+<h2>🌱 「苦手」より、力の出方に差があるところ</h2>
+<div id="gaps"></div>
+</section>
+
+<section class="card">
+<h2>📍 今の時期に意識したいこと</h2>
+<p id="now"></p>
+<ul>
+<li>得意な方法を使って学べるようにする</li>
+<li>急かすより、考える時間を確保する</li>
+<li>作業量が多い課題は小さく区切る</li>
+<li>「できるのに、なぜ？」ではなく、負担の理由を探す</li>
+</ul>
+</section>
+
+<section class="card">
+<h2>これからの成長を見るときに</h2>
+<p>この結果は、将来を決めるものではありません。年齢や経験、環境によって、力の表れ方は変わっていきます。</p>
+<p>大切なのは、数値の高さだけではなく、<b>どんな場面ならその子らしく力を発揮できるか</b>を見つけていくことです。</p>
+</section>
+
+<section class="card soft">
+<h2>保護者の方へ</h2>
+<p>「できること」と「負担になること」が同じ子の中にあるのは、決して不思議なことではありません。</p>
+<p>得意なところは、その子の大切な力です。一方で、相対的に負担が大きいところには、少し環境を整えたり、やり方を変えたりすることで楽になることがあります。</p>
+<p>数値を「評価」として見るのではなく、<b>わが子の取扱説明書を少しずつ作っていくためのヒント</b>として使ってください。</p>
+</section>
+</div>
+</main>
+
 <script>
-const I={vci:["言語理解","言葉の理解や、言語を使って考える力"],vsi:["視空間","形や位置関係を視覚的に捉える力"],fri:["流動性推理","規則性を見つけ論理的に考える力"],wmi:["ワーキングメモリ","情報を一時的に保持しながら扱う力"],psi:["処理速度","視覚情報を正確かつ素早く処理する力"]};
-function lev(s){return s>=130?"非常に高い":s>=120?"高い":s>=110?"平均の上":s>=90?"平均":s>=80?"平均の下":s>=70?"低い":"非常に低い"}
-function go(){let ks=["vci","vsi","fri","wmi","psi"],v={};for(let k of ks){v[k]=+document.getElementById(k).value;if(!v[k]||v[k]<40||v[k]>160){alert("5つの指数を40〜160で入力してください");return}}let a=Object.values(v),r=Math.max(...a)-Math.min(...a);range.textContent=r;bars.innerHTML=ks.map(k=>`<div class="row"><div class="head"><span>${I[k][0]}</span><span class="score">${v[k]}</span></div><div class="desc">${I[k][1]}</div><div class="track"><div class="fill" style="width:${Math.max(0,Math.min(100,(v[k]-40)/1.2))}%"></div></div><div class="desc">${lev(v[k])}</div></div>`).join("");let s=Object.entries(v).sort((a,b)=>b[1]-a[1]),hi=s[0],lo=s[4];let t=`最も高い指数は「${I[hi[0]][0]}」の${hi[1]}、最も低い指数は「${I[lo[0]][0]}」の${lo[1]}です。指数間には最大${r}ポイントの差があります。`;if(r>=30)t+=" 得意な課題と負荷のかかりやすい課題の差が大きいプロフィールです。";else if(r>=20)t+=" 得意・不得意が比較的はっきりしたプロフィールです。";if(v.vsi>=130&&v.fri>=130)t+=" 視覚的に捉える力と、新しい問題を推理する力が特に高い傾向があります。";if(v.fri-v.psi>=25||v.vsi-v.psi>=25)t+=" 思考力に対して処理速度が相対的に低い場合、理解できても時間内に終わりにくいことがあります。";text.textContent=t;let tags=[];if(v.vsi>=130)tags.push("視覚的思考が強い");if(v.fri>=130)tags.push("推理力が強い");if(v.vci>=120)tags.push("言語理解が高い");if(r>=25)tags.push("指数差が大きい");if(v.psi<=90)tags.push("速度より思考重視");document.getElementById("tags").innerHTML=tags.map(x=>`<span class="tag">${x}</span>`).join("");result.style.display="block";result.scrollIntoView({behavior:"smooth"})}
-</script></body></html> 
+const I={
+vci:["言語理解","言葉の意味を理解し、言葉を使って考えたり説明したりする力"],
+vsi:["視空間","形や位置関係、全体の構造を目で捉えて考える力"],
+fri:["流動性推理","初めて見る問題からルールや関係性を見つけて考える力"],
+wmi:["ワーキングメモリ","必要な情報を一時的に頭に置きながら考える力"],
+psi:["処理速度","見た情報を素早く正確に処理し、作業を進める力"]
+};
+function lev(s){return s>=130?"非常に高い":s>=120?"高い":s>=110?"平均の上":s>=90?"一般的な範囲":s>=80?"やや低め":"低め"}
+function go(){
+let ks=["vci","vsi","fri","wmi","psi"],a=+age.value;
+let vals={};ks.forEach(k=>vals[k]=+document.getElementById(k).value);
+let max=Math.max(...Object.values(vals)),min=Math.min(...Object.values(vals)),gap=max-min;
+stage.textContent=a<=9?"現在：小学校低〜中学年":a<=12?"現在：小学校高学年":a<=15?"現在：中学生":"現在：高校生年代";
+headline.textContent=gap>=30?"指標間に大きな開きのあるプロフィールです。":"それぞれの力に、その子らしい特徴があります。";
+intro.textContent=gap>=30?"考える力がとても高い一方で、課題によっては力の出しやすさに大きな差が出ることがあります。「できる・できない」だけでは見えにくいタイプです。":"数値の高低だけでなく、どんな方法なら取り組みやすいかを見ることが、お子さんを理解する手がかりになります。";
+bars.innerHTML=ks.map(k=>`<b>${I[k][0]}</b>　${vals[k]}・${lev(vals[k])}<div class="bar"><div class="fill" style="width:${Math.min(100,vals[k]/1.6)}%"></div></div>`).join("");
+let high=ks.filter(k=>vals[k]>=120).sort((x,y)=>vals[y]-vals[x]);
+strengths.innerHTML=high.length?high.map(k=>`<h3>${I[k][0]} ${vals[k]}</h3><p>${I[k][1]}。この力は、この子が自信を持ちやすい大切な強みになりそうです。</p>`).join(""):"<p>突出した数値だけでなく、日常の中で自然にできていることにも、その子の強みは表れます。</p>";
+let low=ks.filter(k=>vals[k]<=max-20).sort((x,y)=>vals[x]-vals[y]);
+gaps.innerHTML=low.length?low.map(k=>`<h3>${I[k][0]} ${vals[k]}</h3><p>${lev(vals[k])}です。ただし、この数値そのものを「苦手」と決める必要はありません。より高い力と比べたときに、本人が負担やもどかしさを感じやすい可能性があります。</p>`).join(""):"<p>指標間の差は比較的小さめです。実際の困りごとは、数値だけでなく日常の様子と合わせて考えていきましょう。</p>";
+now.textContent=a<=12?"小学校では、得意な力だけを基準に「これくらいできるはず」と期待されると、本人には負担になることがあります。できあがった結果だけでなく、そこまでにどれくらい力を使ったかにも目を向けてみてください。":a<=15?"中学生になると課題量や自己管理の負担が増えます。得意な思考力を活かしながら、作業や整理の部分を仕組みで支えることが役立ちます。":"成長とともに、自分に合う学び方や環境を本人自身が選べることが大切になります。";
+result.style.display="block";result.scrollIntoView({behavior:"smooth"});
+}
+</script>
+</body>
+</html>
